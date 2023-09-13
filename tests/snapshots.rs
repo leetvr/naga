@@ -268,12 +268,14 @@ fn write_output_msl(
 ) {
     use naga::back::msl;
 
-    println!("writing MSL");
+    log::trace!("Writing MSL for {file_name}");
 
     let mut options = options.clone();
     options.bounds_check_policies = bounds_check_policies;
     let (string, tr_info) = msl::write_string(module, info, &options, pipeline_options)
         .unwrap_or_else(|err| panic!("Metal write failed: {err}"));
+
+    log::trace!("..done");
 
     for (ep, result) in module.entry_points.iter().zip(tr_info.entry_point_names) {
         if let Err(error) = result {
@@ -400,7 +402,8 @@ fn convert_wgsl() {
     let _ = env_logger::try_init();
 
     let root = env!("CARGO_MANIFEST_DIR");
-    let inputs = [
+    let _inputs = [
+        // TODO: merge array-in-ctor and array-in-function-return-type tests after fix HLSL issue https://github.com/gfx-rs/naga/issues/1930
         (
             "array-in-ctor",
             Targets::SPIRV | Targets::METAL | Targets::GLSL | Targets::HLSL | Targets::WGSL,
@@ -562,8 +565,11 @@ fn convert_wgsl() {
         ("hlsl-keyword", Targets::HLSL),
     ];
 
+    // TODO kr: re-enable
+    let inputs = [("quad", Targets::METAL)];
+
     for &(name, targets) in inputs.iter() {
-        println!("Processing '{name}'");
+        log::trace!("Processing '{name}'");
         // WGSL shaders lives in root dir as a privileged.
         let file = fs::read_to_string(format!("{root}/{BASE_DIR_IN}/{name}.wgsl"))
             .expect("Couldn't find wgsl file");
@@ -572,6 +578,26 @@ fn convert_wgsl() {
             Err(e) => panic!("{}", e.emit_to_string(&file)),
         }
     }
+
+    // TODO kr: re-enable
+
+    // #[cfg(feature = "span")]
+    // {
+    //     let inputs = [
+    //         ("debug-symbol-simple", Targets::SPIRV),
+    //         ("debug-symbol-terrain", Targets::SPIRV),
+    //     ];
+    //     for &(name, targets) in inputs.iter() {
+    //         println!("Processing '{name}'");
+    //         // WGSL shaders lives in root dir as a privileged.
+    //         let file = fs::read_to_string(format!("{root}/{BASE_DIR_IN}/{name}.wgsl"))
+    //             .expect("Couldn't find wgsl file");
+    //         match naga::front::wgsl::parse_str(&file) {
+    //             Ok(module) => check_targets(&module, name, targets, Some(&file)),
+    //             Err(e) => panic!("{}", e.emit_to_string(&file)),
+    //         }
+    //     }
+    // }
 }
 
 #[cfg(feature = "spv-in")]

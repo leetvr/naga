@@ -14,6 +14,8 @@ struct vert_mainInput {
     metal::float2 pos [[attribute(0)]];
     metal::float2 uv [[attribute(1)]];
 };
+struct vert_mainArgumentBuffer {
+};
 struct vert_mainOutput {
     metal::float2 uv [[user(loc0), center_perspective]];
     metal::float4 position [[position]];
@@ -31,15 +33,20 @@ vertex vert_mainOutput vert_main(
 struct frag_mainInput {
     metal::float2 uv_1 [[user(loc0), center_perspective]];
 };
+struct frag_mainArgumentBuffer {
+    metal::texture2d<float, metal::access::sample> u_texture [[id(0)]];
+    metal::sampler u_sampler [[id(1)]];
+};
 struct frag_mainOutput {
     metal::float4 member_1 [[color(0)]];
 };
 fragment frag_mainOutput frag_main(
   frag_mainInput varyings_1 [[stage_in]]
-, metal::texture2d<float, metal::access::sample> u_texture [[user(fake0)]]
-, metal::sampler u_sampler [[user(fake0)]]
+, const device frag_mainArgumentBuffer & argumentBuffer_1 [[buffer(0)]]
 ) {
     const auto uv_1 = varyings_1.uv_1;
+    const auto u_texture = argumentBuffer_1.u_texture;
+    const auto u_sampler = argumentBuffer_1.u_sampler;
     metal::float4 color = u_texture.sample(u_sampler, uv_1);
     if (color.w == 0.0) {
         metal::discard_fragment();
@@ -49,6 +56,8 @@ fragment frag_mainOutput frag_main(
 }
 
 
+struct fs_extraArgumentBuffer {
+};
 struct fs_extraOutput {
     metal::float4 member_2 [[color(0)]];
 };
