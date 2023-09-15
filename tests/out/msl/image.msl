@@ -8,15 +8,24 @@ constant metal::int2 const_type_9_ = {3, 1};
 
 struct main_Input {
 };
+struct main_ArgumentBuffer {
+    metal::texture2d<uint, metal::access::sample> image_mipmapped_src [[id(0)]];
+    metal::texture2d_ms<uint, metal::access::read> image_multisampled_src [[id(1)]];
+    metal::texture2d<uint, metal::access::read> image_storage_src [[id(2)]];
+    metal::texture2d_array<uint, metal::access::sample> image_array_src [[id(3)]];
+    metal::texture1d<uint, metal::access::sample> image_1d_src [[id(4)]];
+    metal::texture1d<uint, metal::access::write> image_dst [[id(5)]];
+};
 kernel void main_(
-  metal::uint3 local_id [[thread_position_in_threadgroup]]
-, metal::texture2d<uint, metal::access::sample> image_mipmapped_src [[user(fake0)]]
-, metal::texture2d_ms<uint, metal::access::read> image_multisampled_src [[user(fake0)]]
-, metal::texture2d<uint, metal::access::read> image_storage_src [[user(fake0)]]
-, metal::texture2d_array<uint, metal::access::sample> image_array_src [[user(fake0)]]
-, metal::texture1d<uint, metal::access::sample> image_1d_src [[user(fake0)]]
-, metal::texture1d<uint, metal::access::write> image_dst [[user(fake0)]]
+  const device main_ArgumentBuffer & argumentBuffer [[buffer(0)]]
+, metal::uint3 local_id [[thread_position_in_threadgroup]]
 ) {
+    auto image_mipmapped_src = argumentBuffer.image_mipmapped_src;
+    auto image_multisampled_src = argumentBuffer.image_multisampled_src;
+    auto image_storage_src = argumentBuffer.image_storage_src;
+    auto image_array_src = argumentBuffer.image_array_src;
+    auto image_1d_src = argumentBuffer.image_1d_src;
+    auto image_dst = argumentBuffer.image_dst;
     metal::uint2 dim = metal::uint2(image_storage_src.get_width(), image_storage_src.get_height());
     metal::int2 itc = static_cast<metal::int2>(dim * local_id.xy) % metal::int2(10, 20);
     metal::uint4 value1_ = image_mipmapped_src.read(metal::uint2(itc), static_cast<int>(local_id.z));
@@ -39,12 +48,18 @@ kernel void main_(
 
 struct depth_loadInput {
 };
+struct depth_loadArgumentBuffer {
+    metal::depth2d_ms<float, metal::access::read> image_depth_multisampled_src [[id(0)]];
+    metal::texture2d<uint, metal::access::read> image_storage_src [[id(1)]];
+    metal::texture1d<uint, metal::access::write> image_dst [[id(2)]];
+};
 kernel void depth_load(
-  metal::uint3 local_id_1 [[thread_position_in_threadgroup]]
-, metal::depth2d_ms<float, metal::access::read> image_depth_multisampled_src [[user(fake0)]]
-, metal::texture2d<uint, metal::access::read> image_storage_src [[user(fake0)]]
-, metal::texture1d<uint, metal::access::write> image_dst [[user(fake0)]]
+  const device depth_loadArgumentBuffer & argumentBuffer_1 [[buffer(0)]]
+, metal::uint3 local_id_1 [[thread_position_in_threadgroup]]
 ) {
+    auto image_depth_multisampled_src = argumentBuffer_1.image_depth_multisampled_src;
+    auto image_storage_src = argumentBuffer_1.image_storage_src;
+    auto image_dst = argumentBuffer_1.image_dst;
     metal::uint2 dim_1 = metal::uint2(image_storage_src.get_width(), image_storage_src.get_height());
     metal::int2 itc_1 = static_cast<metal::int2>(dim_1 * local_id_1.xy) % metal::int2(10, 20);
     float val = image_depth_multisampled_src.read(metal::uint2(itc_1), static_cast<int>(local_id_1.z));
@@ -53,18 +68,28 @@ kernel void depth_load(
 }
 
 
+struct queriesArgumentBuffer {
+    metal::texture1d<float, metal::access::sample> image_1d [[id(0)]];
+    metal::texture2d<float, metal::access::sample> image_2d [[id(1)]];
+    metal::texture2d_array<float, metal::access::sample> image_2d_array [[id(2)]];
+    metal::texturecube<float, metal::access::sample> image_cube [[id(3)]];
+    metal::texturecube_array<float, metal::access::sample> image_cube_array [[id(4)]];
+    metal::texture3d<float, metal::access::sample> image_3d [[id(5)]];
+    metal::texture2d_ms<float, metal::access::read> image_aa [[id(6)]];
+};
 struct queriesOutput {
     metal::float4 member_2 [[position]];
 };
 vertex queriesOutput queries(
-  metal::texture1d<float, metal::access::sample> image_1d [[user(fake0)]]
-, metal::texture2d<float, metal::access::sample> image_2d [[user(fake0)]]
-, metal::texture2d_array<float, metal::access::sample> image_2d_array [[user(fake0)]]
-, metal::texturecube<float, metal::access::sample> image_cube [[user(fake0)]]
-, metal::texturecube_array<float, metal::access::sample> image_cube_array [[user(fake0)]]
-, metal::texture3d<float, metal::access::sample> image_3d [[user(fake0)]]
-, metal::texture2d_ms<float, metal::access::read> image_aa [[user(fake0)]]
+  const device queriesArgumentBuffer & argumentBuffer_2 [[buffer(0)]]
 ) {
+    auto image_1d = argumentBuffer_2.image_1d;
+    auto image_2d = argumentBuffer_2.image_2d;
+    auto image_2d_array = argumentBuffer_2.image_2d_array;
+    auto image_cube = argumentBuffer_2.image_cube;
+    auto image_cube_array = argumentBuffer_2.image_cube_array;
+    auto image_3d = argumentBuffer_2.image_3d;
+    auto image_aa = argumentBuffer_2.image_aa;
     uint dim_1d = image_1d.get_width();
     uint dim_1d_lod = image_1d.get_width();
     metal::uint2 dim_2d = metal::uint2(image_2d.get_width(), image_2d.get_height());
@@ -83,17 +108,26 @@ vertex queriesOutput queries(
 }
 
 
+struct levels_queriesArgumentBuffer {
+    metal::texture2d<float, metal::access::sample> image_2d [[id(0)]];
+    metal::texture2d_array<float, metal::access::sample> image_2d_array [[id(1)]];
+    metal::texturecube<float, metal::access::sample> image_cube [[id(2)]];
+    metal::texturecube_array<float, metal::access::sample> image_cube_array [[id(3)]];
+    metal::texture3d<float, metal::access::sample> image_3d [[id(4)]];
+    metal::texture2d_ms<float, metal::access::read> image_aa [[id(5)]];
+};
 struct levels_queriesOutput {
     metal::float4 member_3 [[position]];
 };
 vertex levels_queriesOutput levels_queries(
-  metal::texture2d<float, metal::access::sample> image_2d [[user(fake0)]]
-, metal::texture2d_array<float, metal::access::sample> image_2d_array [[user(fake0)]]
-, metal::texturecube<float, metal::access::sample> image_cube [[user(fake0)]]
-, metal::texturecube_array<float, metal::access::sample> image_cube_array [[user(fake0)]]
-, metal::texture3d<float, metal::access::sample> image_3d [[user(fake0)]]
-, metal::texture2d_ms<float, metal::access::read> image_aa [[user(fake0)]]
+  const device levels_queriesArgumentBuffer & argumentBuffer_3 [[buffer(0)]]
 ) {
+    auto image_2d = argumentBuffer_3.image_2d;
+    auto image_2d_array = argumentBuffer_3.image_2d_array;
+    auto image_cube = argumentBuffer_3.image_cube;
+    auto image_cube_array = argumentBuffer_3.image_cube_array;
+    auto image_3d = argumentBuffer_3.image_3d;
+    auto image_aa = argumentBuffer_3.image_aa;
     uint num_levels_2d = image_2d.get_num_mip_levels();
     uint num_levels_2d_array = image_2d_array.get_num_mip_levels();
     uint num_layers_2d = image_2d_array.get_array_size();
@@ -107,16 +141,24 @@ vertex levels_queriesOutput levels_queries(
 }
 
 
+struct texture_sampleArgumentBuffer {
+    metal::texture1d<float, metal::access::sample> image_1d [[id(0)]];
+    metal::texture2d<float, metal::access::sample> image_2d [[id(1)]];
+    metal::texture2d_array<float, metal::access::sample> image_2d_array [[id(2)]];
+    metal::texturecube_array<float, metal::access::sample> image_cube_array [[id(3)]];
+    metal::sampler sampler_reg [[id(4)]];
+};
 struct texture_sampleOutput {
     metal::float4 member_4 [[color(0)]];
 };
 fragment texture_sampleOutput texture_sample(
-  metal::texture1d<float, metal::access::sample> image_1d [[user(fake0)]]
-, metal::texture2d<float, metal::access::sample> image_2d [[user(fake0)]]
-, metal::texture2d_array<float, metal::access::sample> image_2d_array [[user(fake0)]]
-, metal::texturecube_array<float, metal::access::sample> image_cube_array [[user(fake0)]]
-, metal::sampler sampler_reg [[user(fake0)]]
+  const device texture_sampleArgumentBuffer & argumentBuffer_4 [[buffer(0)]]
 ) {
+    auto image_1d = argumentBuffer_4.image_1d;
+    auto image_2d = argumentBuffer_4.image_2d;
+    auto image_2d_array = argumentBuffer_4.image_2d_array;
+    auto image_cube_array = argumentBuffer_4.image_cube_array;
+    auto sampler_reg = argumentBuffer_4.sampler_reg;
     metal::float4 a = {};
     metal::float2 tc = metal::float2(0.5);
     metal::float3 tc3_ = metal::float3(0.5);
@@ -191,15 +233,22 @@ fragment texture_sampleOutput texture_sample(
 }
 
 
+struct texture_sample_comparisonArgumentBuffer {
+    metal::sampler sampler_cmp [[id(0)]];
+    metal::depth2d<float, metal::access::sample> image_2d_depth [[id(1)]];
+    metal::depth2d_array<float, metal::access::sample> image_2d_array_depth [[id(2)]];
+    metal::depthcube<float, metal::access::sample> image_cube_depth [[id(3)]];
+};
 struct texture_sample_comparisonOutput {
     float member_5 [[color(0)]];
 };
 fragment texture_sample_comparisonOutput texture_sample_comparison(
-  metal::sampler sampler_cmp [[user(fake0)]]
-, metal::depth2d<float, metal::access::sample> image_2d_depth [[user(fake0)]]
-, metal::depth2d_array<float, metal::access::sample> image_2d_array_depth [[user(fake0)]]
-, metal::depthcube<float, metal::access::sample> image_cube_depth [[user(fake0)]]
+  const device texture_sample_comparisonArgumentBuffer & argumentBuffer_5 [[buffer(0)]]
 ) {
+    auto sampler_cmp = argumentBuffer_5.sampler_cmp;
+    auto image_2d_depth = argumentBuffer_5.image_2d_depth;
+    auto image_2d_array_depth = argumentBuffer_5.image_2d_array_depth;
+    auto image_cube_depth = argumentBuffer_5.image_cube_depth;
     float a_1 = {};
     metal::float2 tc_1 = metal::float2(0.5);
     metal::float3 tc3_1 = metal::float3(0.5);
@@ -232,17 +281,26 @@ fragment texture_sample_comparisonOutput texture_sample_comparison(
 }
 
 
+struct gatherArgumentBuffer {
+    metal::texture2d<float, metal::access::sample> image_2d [[id(0)]];
+    metal::texture2d<uint, metal::access::sample> image_2d_u32_ [[id(1)]];
+    metal::texture2d<int, metal::access::sample> image_2d_i32_ [[id(2)]];
+    metal::sampler sampler_reg [[id(3)]];
+    metal::sampler sampler_cmp [[id(4)]];
+    metal::depth2d<float, metal::access::sample> image_2d_depth [[id(5)]];
+};
 struct gatherOutput {
     metal::float4 member_6 [[color(0)]];
 };
 fragment gatherOutput gather(
-  metal::texture2d<float, metal::access::sample> image_2d [[user(fake0)]]
-, metal::texture2d<uint, metal::access::sample> image_2d_u32_ [[user(fake0)]]
-, metal::texture2d<int, metal::access::sample> image_2d_i32_ [[user(fake0)]]
-, metal::sampler sampler_reg [[user(fake0)]]
-, metal::sampler sampler_cmp [[user(fake0)]]
-, metal::depth2d<float, metal::access::sample> image_2d_depth [[user(fake0)]]
+  const device gatherArgumentBuffer & argumentBuffer_6 [[buffer(0)]]
 ) {
+    auto image_2d = argumentBuffer_6.image_2d;
+    auto image_2d_u32_ = argumentBuffer_6.image_2d_u32_;
+    auto image_2d_i32_ = argumentBuffer_6.image_2d_i32_;
+    auto sampler_reg = argumentBuffer_6.sampler_reg;
+    auto sampler_cmp = argumentBuffer_6.sampler_cmp;
+    auto image_2d_depth = argumentBuffer_6.image_2d_depth;
     metal::float2 tc_2 = metal::float2(0.5);
     metal::float4 s2d = image_2d.gather(sampler_reg, tc_2, metal::int2(0), metal::component::y);
     metal::float4 s2d_offset = image_2d.gather(sampler_reg, tc_2, const_type_9_, metal::component::w);
@@ -255,13 +313,18 @@ fragment gatherOutput gather(
 }
 
 
+struct depth_no_comparisonArgumentBuffer {
+    metal::sampler sampler_reg [[id(0)]];
+    metal::depth2d<float, metal::access::sample> image_2d_depth [[id(1)]];
+};
 struct depth_no_comparisonOutput {
     metal::float4 member_7 [[color(0)]];
 };
 fragment depth_no_comparisonOutput depth_no_comparison(
-  metal::sampler sampler_reg [[user(fake0)]]
-, metal::depth2d<float, metal::access::sample> image_2d_depth [[user(fake0)]]
+  const device depth_no_comparisonArgumentBuffer & argumentBuffer_7 [[buffer(0)]]
 ) {
+    auto sampler_reg = argumentBuffer_7.sampler_reg;
+    auto image_2d_depth = argumentBuffer_7.image_2d_depth;
     metal::float2 tc_3 = metal::float2(0.5);
     float s2d_1 = image_2d_depth.sample(sampler_reg, tc_3);
     metal::float4 s2d_gather = image_2d_depth.gather(sampler_reg, tc_3);

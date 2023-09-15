@@ -1,4 +1,16 @@
 // This snapshot tests accessing various containers, dereferencing pointers.
+@group(0) @binding(0)
+var<storage,read_write> bar: Bar;
+
+@group(0) @binding(1)
+var<uniform> baz: Baz;
+
+@group(0) @binding(2)
+var<storage,read_write> qux: vec2<i32>;
+
+struct Baz {
+	m: mat3x2<f32>,
+}
 
 struct GlobalConst {
     a: u32,
@@ -21,18 +33,6 @@ struct Bar {
 	data: array<AlignedWrapper>,
 }
 
-@group(0) @binding(0)
-var<storage,read_write> bar: Bar;
-
-struct Baz {
-	m: mat3x2<f32>,
-}
-
-@group(0) @binding(1)
-var<uniform> baz: Baz;
-
-@group(0) @binding(2)
-var<storage,read_write> qux: vec2<i32>;
 
 fn test_matrix_within_struct_accesses() {
 	var idx = 1;

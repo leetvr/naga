@@ -153,20 +153,32 @@ void test_textureStore_3d(
     return;
 }
 
+struct fragment_shaderArgumentBuffer {
+    metal::texture1d<float, metal::access::sample> image_1d [[id(0)]];
+    metal::texture2d<float, metal::access::sample> image_2d [[id(1)]];
+    metal::texture2d_array<float, metal::access::sample> image_2d_array [[id(2)]];
+    metal::texture3d<float, metal::access::sample> image_3d [[id(3)]];
+    metal::texture2d_ms<float, metal::access::read> image_multisampled_2d [[id(4)]];
+    metal::texture1d<float, metal::access::write> image_storage_1d [[id(5)]];
+    metal::texture2d<float, metal::access::write> image_storage_2d [[id(6)]];
+    metal::texture2d_array<float, metal::access::write> image_storage_2d_array [[id(7)]];
+    metal::texture3d<float, metal::access::write> image_storage_3d [[id(8)]];
+};
 struct fragment_shaderOutput {
     metal::float4 member [[color(0)]];
 };
 fragment fragment_shaderOutput fragment_shader(
-  metal::texture1d<float, metal::access::sample> image_1d [[user(fake0)]]
-, metal::texture2d<float, metal::access::sample> image_2d [[user(fake0)]]
-, metal::texture2d_array<float, metal::access::sample> image_2d_array [[user(fake0)]]
-, metal::texture3d<float, metal::access::sample> image_3d [[user(fake0)]]
-, metal::texture2d_ms<float, metal::access::read> image_multisampled_2d [[user(fake0)]]
-, metal::texture1d<float, metal::access::write> image_storage_1d [[user(fake0)]]
-, metal::texture2d<float, metal::access::write> image_storage_2d [[user(fake0)]]
-, metal::texture2d_array<float, metal::access::write> image_storage_2d_array [[user(fake0)]]
-, metal::texture3d<float, metal::access::write> image_storage_3d [[user(fake0)]]
+  const device fragment_shaderArgumentBuffer & argumentBuffer [[buffer(0)]]
 ) {
+    auto image_1d = argumentBuffer.image_1d;
+    auto image_2d = argumentBuffer.image_2d;
+    auto image_2d_array = argumentBuffer.image_2d_array;
+    auto image_3d = argumentBuffer.image_3d;
+    auto image_multisampled_2d = argumentBuffer.image_multisampled_2d;
+    auto image_storage_1d = argumentBuffer.image_storage_1d;
+    auto image_storage_2d = argumentBuffer.image_storage_2d;
+    auto image_storage_2d_array = argumentBuffer.image_storage_2d_array;
+    auto image_storage_3d = argumentBuffer.image_storage_3d;
     metal::float4 _e2 = test_textureLoad_1d(0, 0, image_1d);
     metal::float4 _e5 = test_textureLoad_2d(metal::int2 {}, 0, image_2d);
     metal::float4 _e9 = test_textureLoad_2d_array_u(metal::int2 {}, 0u, 0, image_2d_array);

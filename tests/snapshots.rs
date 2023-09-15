@@ -402,7 +402,7 @@ fn convert_wgsl() {
     let _ = env_logger::try_init();
 
     let root = env!("CARGO_MANIFEST_DIR");
-    let _inputs = [
+    let inputs = [
         // TODO: merge array-in-ctor and array-in-function-return-type tests after fix HLSL issue https://github.com/gfx-rs/naga/issues/1930
         (
             "array-in-ctor",
@@ -564,9 +564,6 @@ fn convert_wgsl() {
         ("ray-query", Targets::SPIRV | Targets::METAL),
         ("hlsl-keyword", Targets::HLSL),
     ];
-
-    // TODO kr: re-enable
-    let inputs = [("quad", Targets::METAL)];
 
     for &(name, targets) in inputs.iter() {
         log::trace!("Processing '{name}'");

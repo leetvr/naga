@@ -45,11 +45,15 @@ uint collatz_iterations(
 
 struct main_Input {
 };
+struct main_ArgumentBuffer {
+    device PrimeIndices& v_indices [[id(0)]];
+};
 kernel void main_(
-  metal::uint3 global_id [[thread_position_in_grid]]
-, device PrimeIndices& v_indices [[user(fake0)]]
+  const device main_ArgumentBuffer & argumentBuffer [[buffer(0)]]
+, metal::uint3 global_id [[thread_position_in_grid]]
 , constant _mslBufferSizes& _buffer_sizes [[user(fake0)]]
 ) {
+    auto v_indices = argumentBuffer.v_indices;
     uint _e9 = v_indices.data[global_id.x];
     uint _e10 = collatz_iterations(_e9);
     v_indices.data[global_id.x] = _e10;

@@ -60,6 +60,14 @@ struct type_26 {
 constant metal::uint3 const_type_1_ = {0u, 0u, 0u};
 constant GlobalConst const_GlobalConst = {0u, {}, const_type_1_, 0};
 
+struct Group0_argumentBuffer {
+    device Bar& bar [[id(0)]]; // binding 0
+    constant Baz& baz [[id(1)]]; // binding 1
+    device metal::int2& qux [[id(2)]]; // binding 2
+    constant MatCx2InArray& nested_mat_cx2_ [[id(3)]]; // binding 3
+};
+
+
 void test_matrix_within_struct_accesses(
     constant Baz& baz
 ) {
@@ -170,14 +178,22 @@ struct foo_vertInput {
 struct foo_vertOutput {
     metal::float4 member [[position]];
 };
+
+// , device Bar const& bar [[buffer(0)]]
+// , constant Baz& baz [[buffer(1)]]
+// , device metal::int2 const& qux [[buffer(2)]]
+// , constant MatCx2InArray& nested_mat_cx2_ [[buffer(3)]]
+
 vertex foo_vertOutput foo_vert(
   uint vi [[vertex_id]]
-, device Bar const& bar [[buffer(0)]]
-, constant Baz& baz [[buffer(1)]]
-, device metal::int2 const& qux [[buffer(2)]]
-, constant MatCx2InArray& nested_mat_cx2_ [[buffer(3)]]
+, device Group0_argumentBuffer& group0_argumentBuffer [[buffer(30)]]
 , constant _mslBufferSizes& _buffer_sizes [[buffer(24)]]
 ) {
+    device Bar const& bar = group0_argumentBuffer.bar;
+    constant Baz& baz = group0_argumentBuffer.baz;
+    device metal::int2 const& qux = group0_argumentBuffer.qux;
+    constant MatCx2InArray& nested_mat_cx2_ = group0_argumentBuffer.nested_mat_cx2_;
+
     float foo = {};
     type_22 c2_ = {};
     foo = 0.0;
@@ -202,11 +218,14 @@ vertex foo_vertOutput foo_vert(
 struct foo_fragOutput {
     metal::float4 member_1 [[color(0)]];
 };
+
+
 fragment foo_fragOutput foo_frag(
-  device Bar& bar [[buffer(0)]]
-, device metal::int2& qux [[buffer(2)]]
+  device Group0_argumentBuffer& group0_argumentBuffer [[buffer(30)]]
 , constant _mslBufferSizes& _buffer_sizes [[buffer(24)]]
 ) {
+    device Bar& bar = group0_argumentBuffer.bar;
+    device metal::int2& qux = group0_argumentBuffer.qux;
     bar._matrix[1].z = 1.0;
     bar._matrix = metal::float4x3(metal::float3(0.0), metal::float3(1.0), metal::float3(2.0), metal::float3(3.0));
     bar.arr = type_9 {metal::uint2(0u), metal::uint2(1u)};

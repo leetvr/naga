@@ -23,14 +23,20 @@ struct Test3_ {
     float b;
 };
 
+struct vertex_ArgumentBuffer {
+    constant Test& input1_ [[id(0)]];
+    constant Test2_& input2_ [[id(1)]];
+    constant Test3_& input3_ [[id(2)]];
+};
 struct vertex_Output {
     metal::float4 member [[position]];
 };
 vertex vertex_Output vertex_(
-  constant Test& input1_ [[buffer(0)]]
-, constant Test2_& input2_ [[buffer(1)]]
-, constant Test3_& input3_ [[buffer(2)]]
+  const device vertex_ArgumentBuffer & argumentBuffer [[buffer(0)]]
 ) {
+    auto input1_ = argumentBuffer.input1_;
+    auto input2_ = argumentBuffer.input2_;
+    auto input3_ = argumentBuffer.input3_;
     float _e4 = input1_.b;
     float _e8 = input2_.b;
     float _e12 = input3_.b;

@@ -15,14 +15,18 @@ struct Data {
 
 struct vs_mainInput {
 };
+struct vs_mainArgumentBuffer {
+    constant Data& r_data [[id(0)]];
+};
 struct vs_mainOutput {
     metal::float4 position [[position]];
     metal::float3 uv [[user(loc0), center_perspective]];
 };
 vertex vs_mainOutput vs_main(
-  uint vertex_index [[vertex_id]]
-, constant Data& r_data [[buffer(0)]]
+  const device vs_mainArgumentBuffer & argumentBuffer [[buffer(0)]]
+, uint vertex_index [[vertex_id]]
 ) {
+    auto r_data = argumentBuffer.r_data;
     int tmp1_ = {};
     int tmp2_ = {};
     tmp1_ = static_cast<int>(vertex_index) / 2;
@@ -44,13 +48,16 @@ vertex vs_mainOutput vs_main(
 struct fs_mainInput {
     metal::float3 uv [[user(loc0), center_perspective]];
 };
+struct fs_mainArgumentBuffer {
+    metal::texturecube<float, metal::access::sample> r_texture [[id(0)]];
+};
 struct fs_mainOutput {
     metal::float4 member_1 [[color(0)]];
 };
 fragment fs_mainOutput fs_main(
   fs_mainInput varyings_1 [[stage_in]]
+, const device fs_mainArgumentBuffer & argumentBuffer_1 [[buffer(0)]]
 , metal::float4 position [[position]]
-, metal::texturecube<float, metal::access::sample> r_texture [[texture(0)]]
 ) {
     constexpr metal::sampler r_sampler(
         metal::s_address::clamp_to_edge,
@@ -61,6 +68,8 @@ fragment fs_mainOutput fs_main(
         metal::coord::normalized
     );
     const VertexOutput in = { position, varyings_1.uv };
+    auto r_texture = argumentBuffer_1.r_texture;
+    auto r_sampler = argumentBuffer_1.r_sampler;
     metal::float4 _e4 = r_texture.sample(r_sampler, in.uv);
     return fs_mainOutput { _e4 };
 }

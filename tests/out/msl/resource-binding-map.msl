@@ -13,12 +13,15 @@ struct DefaultConstructible {
 
 struct entry_point_oneInput {
 };
+struct entry_point_oneArgumentBuffer {
+    metal::texture2d<float, metal::access::sample> t1_ [[id(0)]];
+};
 struct entry_point_oneOutput {
     metal::float4 member [[color(0)]];
 };
 fragment entry_point_oneOutput entry_point_one(
-  metal::float4 pos [[position]]
-, metal::texture2d<float, metal::access::sample> t1_ [[texture(0)]]
+  const device entry_point_oneArgumentBuffer & argumentBuffer [[buffer(0)]]
+, metal::float4 pos [[position]]
 ) {
     constexpr metal::sampler s1_(
         metal::s_address::clamp_to_edge,
@@ -28,34 +31,45 @@ fragment entry_point_oneOutput entry_point_one(
         metal::min_filter::linear,
         metal::coord::normalized
     );
+    auto t1_ = argumentBuffer.t1_;
+    auto s1_ = argumentBuffer.s1_;
     metal::float4 _e4 = t1_.sample(s1_, pos.xy);
     return entry_point_oneOutput { _e4 };
 }
 
 
+struct entry_point_twoArgumentBuffer {
+    metal::texture2d<float, metal::access::sample> t1_ [[id(0)]];
+    metal::sampler s1_ [[id(1)]];
+    constant metal::float2& uniformOne [[id(2)]];
+};
 struct entry_point_twoOutput {
     metal::float4 member_1 [[color(0)]];
 };
 fragment entry_point_twoOutput entry_point_two(
-  metal::texture2d<float, metal::access::sample> t1_ [[texture(0)]]
-, metal::sampler s1_ [[sampler(0)]]
-, constant metal::float2& uniformOne [[buffer(0)]]
+  const device entry_point_twoArgumentBuffer & argumentBuffer_1 [[buffer(0)]]
 ) {
+    auto t1_ = argumentBuffer_1.t1_;
+    auto s1_ = argumentBuffer_1.s1_;
+    auto uniformOne = argumentBuffer_1.uniformOne;
     metal::float2 _e3 = uniformOne;
     metal::float4 _e4 = t1_.sample(s1_, _e3);
     return entry_point_twoOutput { _e4 };
 }
 
 
+struct entry_point_threeArgumentBuffer {
+    metal::texture2d<float, metal::access::sample> t1_ [[id(0)]];
+    metal::texture2d<float, metal::access::sample> t2_ [[id(1)]];
+    metal::sampler s2_ [[id(2)]];
+    constant metal::float2& uniformOne [[id(3)]];
+    constant metal::float2& uniformTwo [[id(4)]];
+};
 struct entry_point_threeOutput {
     metal::float4 member_2 [[color(0)]];
 };
 fragment entry_point_threeOutput entry_point_three(
-  metal::texture2d<float, metal::access::sample> t1_ [[texture(0)]]
-, metal::texture2d<float, metal::access::sample> t2_ [[texture(1)]]
-, metal::sampler s2_ [[sampler(1)]]
-, constant metal::float2& uniformOne [[buffer(0)]]
-, constant metal::float2& uniformTwo [[buffer(1)]]
+  const device entry_point_threeArgumentBuffer & argumentBuffer_2 [[buffer(0)]]
 ) {
     constexpr metal::sampler s1_(
         metal::s_address::clamp_to_edge,
@@ -65,6 +79,12 @@ fragment entry_point_threeOutput entry_point_three(
         metal::min_filter::linear,
         metal::coord::normalized
     );
+    auto t1_ = argumentBuffer_2.t1_;
+    auto t2_ = argumentBuffer_2.t2_;
+    auto s1_ = argumentBuffer_2.s1_;
+    auto s2_ = argumentBuffer_2.s2_;
+    auto uniformOne = argumentBuffer_2.uniformOne;
+    auto uniformTwo = argumentBuffer_2.uniformTwo;
     metal::float2 _e3 = uniformTwo;
     metal::float2 _e5 = uniformOne;
     metal::float4 _e7 = t1_.sample(s1_, _e3 + _e5);

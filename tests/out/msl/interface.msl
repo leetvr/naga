@@ -26,6 +26,8 @@ struct Input2_ {
 struct vertex_Input {
     uint color [[attribute(10)]];
 };
+struct vertex_ArgumentBuffer {
+};
 struct vertex_Output {
     metal::float4 position [[position, invariant]];
     float _varying [[user(loc1), center_perspective]];
@@ -45,6 +47,8 @@ vertex vertex_Output vertex_(
 
 struct fragment_Input {
     float _varying [[user(loc1), center_perspective]];
+};
+struct fragment_ArgumentBuffer {
 };
 struct fragment_Output {
     float depth [[depth(any)]];
@@ -68,24 +72,30 @@ fragment fragment_Output fragment_(
 
 struct compute_Input {
 };
+struct compute_ArgumentBuffer {
+    threadgroup type_4& output;
+};
 kernel void compute_(
-  metal::uint3 global_id [[thread_position_in_grid]]
+  const device compute_ArgumentBuffer & argumentBuffer_2 [[buffer(0)]]
+, metal::uint3 global_id [[thread_position_in_grid]]
 , metal::uint3 local_id [[thread_position_in_threadgroup]]
 , uint local_index [[thread_index_in_threadgroup]]
 , metal::uint3 wg_id [[threadgroup_position_in_grid]]
 , metal::uint3 num_wgs [[threadgroups_per_grid]]
-, threadgroup type_4& output
 ) {
     if (metal::all(local_id == metal::uint3(0u))) {
         output = {};
     }
     metal::threadgroup_barrier(metal::mem_flags::mem_threadgroup);
+    auto output = argumentBuffer_2.output;
     output.inner[0] = (((global_id.x + local_id.x) + local_index) + wg_id.x) + num_wgs.x;
     return;
 }
 
 
 struct vertex_two_structsInput {
+};
+struct vertex_two_structsArgumentBuffer {
 };
 struct vertex_two_structsOutput {
     metal::float4 member_3 [[position, invariant]];

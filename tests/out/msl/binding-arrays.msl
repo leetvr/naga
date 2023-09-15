@@ -20,22 +20,34 @@ struct FragmentIn {
 struct main_Input {
     uint index [[user(loc0), flat]];
 };
+struct main_ArgumentBuffer {
+    metal::array<metal::texture2d<float, metal::access::sample>, 10> texture_array_unbounded [[id(0)]];
+    metal::array<metal::texture2d<float, metal::access::sample>, 5> texture_array_bounded [[id(1)]];
+    metal::array<metal::texture2d_array<float, metal::access::sample>, 5> texture_array_2darray [[id(2)]];
+    metal::array<metal::texture2d_ms<float, metal::access::read>, 5> texture_array_multisampled [[id(3)]];
+    metal::array<metal::depth2d<float, metal::access::sample>, 5> texture_array_depth [[id(4)]];
+    metal::array<metal::texture2d<float, metal::access::write>, 5> texture_array_storage [[id(5)]];
+    metal::array<metal::sampler, 5> samp [[id(6)]];
+    metal::array<metal::sampler, 5> samp_comp [[id(7)]];
+    constant UniformIndex& uni [[id(8)]];
+};
 struct main_Output {
     metal::float4 member [[color(0)]];
 };
 fragment main_Output main_(
   main_Input varyings [[stage_in]]
-, metal::array<metal::texture2d<float, metal::access::sample>, 10> texture_array_unbounded [[texture(0)]]
-, metal::array<metal::texture2d<float, metal::access::sample>, 5> texture_array_bounded [[user(fake0)]]
-, metal::array<metal::texture2d_array<float, metal::access::sample>, 5> texture_array_2darray [[user(fake0)]]
-, metal::array<metal::texture2d_ms<float, metal::access::read>, 5> texture_array_multisampled [[user(fake0)]]
-, metal::array<metal::depth2d<float, metal::access::sample>, 5> texture_array_depth [[user(fake0)]]
-, metal::array<metal::texture2d<float, metal::access::write>, 5> texture_array_storage [[user(fake0)]]
-, metal::array<metal::sampler, 5> samp [[user(fake0)]]
-, metal::array<metal::sampler, 5> samp_comp [[user(fake0)]]
-, constant UniformIndex& uni [[user(fake0)]]
+, const device main_ArgumentBuffer & argumentBuffer [[buffer(0)]]
 ) {
     const FragmentIn fragment_in = { varyings.index };
+    auto texture_array_unbounded = argumentBuffer.texture_array_unbounded;
+    auto texture_array_bounded = argumentBuffer.texture_array_bounded;
+    auto texture_array_2darray = argumentBuffer.texture_array_2darray;
+    auto texture_array_multisampled = argumentBuffer.texture_array_multisampled;
+    auto texture_array_depth = argumentBuffer.texture_array_depth;
+    auto texture_array_storage = argumentBuffer.texture_array_storage;
+    auto samp = argumentBuffer.samp;
+    auto samp_comp = argumentBuffer.samp_comp;
+    auto uni = argumentBuffer.uni;
     uint u1_ = {};
     metal::uint2 u2_ = {};
     float v1_ = {};

@@ -45,8 +45,8 @@ fragment frag_mainOutput frag_main(
 , const device frag_mainArgumentBuffer & argumentBuffer_1 [[buffer(0)]]
 ) {
     const auto uv_1 = varyings_1.uv_1;
-    const auto u_texture = argumentBuffer_1.u_texture;
-    const auto u_sampler = argumentBuffer_1.u_sampler;
+    auto u_texture = argumentBuffer_1.u_texture;
+    auto u_sampler = argumentBuffer_1.u_sampler;
     metal::float4 color = u_texture.sample(u_sampler, uv_1);
     if (color.w == 0.0) {
         metal::discard_fragment();

@@ -13,13 +13,18 @@ metal::float4 test(
     return _e5;
 }
 
+struct main_ArgumentBuffer {
+    metal::texture2d<float, metal::access::sample> Texture [[id(0)]];
+    metal::sampler Sampler [[id(1)]];
+};
 struct main_Output {
     metal::float4 member [[color(0)]];
 };
 fragment main_Output main_(
-  metal::texture2d<float, metal::access::sample> Texture [[user(fake0)]]
-, metal::sampler Sampler [[user(fake0)]]
+  const device main_ArgumentBuffer & argumentBuffer [[buffer(0)]]
 ) {
+    auto Texture = argumentBuffer.Texture;
+    auto Sampler = argumentBuffer.Sampler;
     metal::float4 _e2 = test(Texture, Sampler);
     return main_Output { _e2 };
 }

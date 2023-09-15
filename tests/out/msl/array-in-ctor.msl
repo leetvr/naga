@@ -11,8 +11,12 @@ struct Ah {
     type_1 inner;
 };
 
+struct cs_mainArgumentBuffer {
+    device Ah const& ah [[id(0)]];
+};
 kernel void cs_main(
-  device Ah const& ah [[user(fake0)]]
+  const device cs_mainArgumentBuffer & argumentBuffer [[buffer(0)]]
 ) {
+    auto ah = argumentBuffer.ah;
     Ah ah_1 = ah;
 }

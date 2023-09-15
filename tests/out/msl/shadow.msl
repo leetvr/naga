@@ -53,6 +53,10 @@ struct vs_mainInput {
     metal::int4 position [[attribute(0)]];
     metal::int4 normal [[attribute(1)]];
 };
+struct vs_mainArgumentBuffer {
+    constant Globals& u_globals [[id(0)]];
+    constant Entity& u_entity [[id(1)]];
+};
 struct vs_mainOutput {
     metal::float4 proj_position [[position]];
     metal::float3 world_normal [[user(loc0), center_perspective]];
@@ -60,11 +64,12 @@ struct vs_mainOutput {
 };
 vertex vs_mainOutput vs_main(
   vs_mainInput varyings [[stage_in]]
-, constant Globals& u_globals [[user(fake0)]]
-, constant Entity& u_entity [[user(fake0)]]
+, const device vs_mainArgumentBuffer & argumentBuffer [[buffer(0)]]
 ) {
     const auto position = varyings.position;
     const auto normal = varyings.normal;
+    auto u_globals = argumentBuffer.u_globals;
+    auto u_entity = argumentBuffer.u_entity;
     VertexOutput out = {};
     metal::float4x4 w = u_entity.world;
     metal::float4x4 _e7 = u_entity.world;
@@ -83,20 +88,28 @@ struct fs_mainInput {
     metal::float3 world_normal [[user(loc0), center_perspective]];
     metal::float4 world_position [[user(loc1), center_perspective]];
 };
+struct fs_mainArgumentBuffer {
+    constant Globals& u_globals [[id(0)]];
+    constant Entity& u_entity [[id(1)]];
+    device type_6 const& s_lights [[id(2)]];
+    metal::depth2d_array<float, metal::access::sample> t_shadow [[id(3)]];
+    metal::sampler sampler_shadow [[id(4)]];
+};
 struct fs_mainOutput {
     metal::float4 member_1 [[color(0)]];
 };
 fragment fs_mainOutput fs_main(
   fs_mainInput varyings_1 [[stage_in]]
+, const device fs_mainArgumentBuffer & argumentBuffer_1 [[buffer(0)]]
 , metal::float4 proj_position [[position]]
-, constant Globals& u_globals [[user(fake0)]]
-, constant Entity& u_entity [[user(fake0)]]
-, device type_6 const& s_lights [[user(fake0)]]
-, metal::depth2d_array<float, metal::access::sample> t_shadow [[user(fake0)]]
-, metal::sampler sampler_shadow [[user(fake0)]]
 , constant _mslBufferSizes& _buffer_sizes [[user(fake0)]]
 ) {
     const VertexOutput in = { proj_position, varyings_1.world_normal, varyings_1.world_position };
+    auto u_globals = argumentBuffer_1.u_globals;
+    auto u_entity = argumentBuffer_1.u_entity;
+    auto s_lights = argumentBuffer_1.s_lights;
+    auto t_shadow = argumentBuffer_1.t_shadow;
+    auto sampler_shadow = argumentBuffer_1.sampler_shadow;
     metal::float3 color = {};
     uint i = {};
     metal::float3 normal_1 = metal::normalize(in.world_normal);
@@ -136,19 +149,27 @@ struct fs_main_without_storageInput {
     metal::float3 world_normal [[user(loc0), center_perspective]];
     metal::float4 world_position [[user(loc1), center_perspective]];
 };
+struct fs_main_without_storageArgumentBuffer {
+    constant Globals& u_globals [[id(0)]];
+    constant Entity& u_entity [[id(1)]];
+    constant type_7& u_lights [[id(2)]];
+    metal::depth2d_array<float, metal::access::sample> t_shadow [[id(3)]];
+    metal::sampler sampler_shadow [[id(4)]];
+};
 struct fs_main_without_storageOutput {
     metal::float4 member_2 [[color(0)]];
 };
 fragment fs_main_without_storageOutput fs_main_without_storage(
   fs_main_without_storageInput varyings_2 [[stage_in]]
+, const device fs_main_without_storageArgumentBuffer & argumentBuffer_2 [[buffer(0)]]
 , metal::float4 proj_position_1 [[position]]
-, constant Globals& u_globals [[user(fake0)]]
-, constant Entity& u_entity [[user(fake0)]]
-, constant type_7& u_lights [[user(fake0)]]
-, metal::depth2d_array<float, metal::access::sample> t_shadow [[user(fake0)]]
-, metal::sampler sampler_shadow [[user(fake0)]]
 ) {
     const VertexOutput in_1 = { proj_position_1, varyings_2.world_normal, varyings_2.world_position };
+    auto u_globals = argumentBuffer_2.u_globals;
+    auto u_entity = argumentBuffer_2.u_entity;
+    auto u_lights = argumentBuffer_2.u_lights;
+    auto t_shadow = argumentBuffer_2.t_shadow;
+    auto sampler_shadow = argumentBuffer_2.sampler_shadow;
     metal::float3 color_1 = {};
     uint i_1 = {};
     metal::float3 normal_2 = metal::normalize(in_1.world_normal);

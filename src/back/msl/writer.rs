@@ -4139,7 +4139,7 @@ impl<W: Write> Writer<W> {
             // TODO (KR): it seems a bit wasteful to use `auto` here?
             writeln!(
                 self.out,
-                "{}const auto {name} = {argument_buffer_member_name}.{name};",
+                "{}auto {name} = {argument_buffer_member_name}.{name};",
                 back::INDENT,
             )?;
         }
